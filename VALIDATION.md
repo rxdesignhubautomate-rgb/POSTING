@@ -1,16 +1,16 @@
 # RX Publer Web Validation
 
-Validation completed on 2026-09-17.
+Validation updated on 2026-09-17.
 
 ## Checks
 
-- `npm run build`
+- `npm ci --no-fund`
 - `npm test`
-- Local browser preview at `http://127.0.0.1:3100/`
+- `npm run build`
 
 ## Result
 
-The Next.js production build completed successfully, and the Node test suite passed.
+The clean install completed, the Node test suite passed, and the Next.js production build completed successfully.
 
 The dashboard was opened locally in demo mode and the main workflow was checked:
 
@@ -22,4 +22,8 @@ The dashboard was opened locally in demo mode and the main workflow was checked:
 
 ## Notes
 
-Demo mode is intentional when `ADMIN_PASSWORD` is missing or `DEMO_MODE=true`. Production mode requires the environment variables listed in `.env.example`, the Neon SQL schema in `schema.sql`, Vercel Blob storage, Anthropic API access, and Publer API access.
+Weekly autopilot coverage now includes planner slot generation, deterministic planning, YouTube video reuse limits, shortfall reporting, persona validation, cron authorization, existing route safety, model payloads, engine safety and auth.
+
+Demo mode is intentional when `ADMIN_PASSWORD` is missing or `DEMO_MODE=true`. Production mode requires the environment variables listed in `.env.example`, the Neon SQL schema in `schema.sql`, Vercel Blob storage, OpenAI API access, Publer API access, and a configured cron trigger.
+
+Live Neon/Blob/OpenAI/Publer acceptance and real social posting still require your account credentials and manual Publer verification.

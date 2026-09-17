@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. With no credentials configured, the app opens a clearly labeled **demo workspace**. You can create/edit briefs, upload small sample media, switch platform previews, simulate publishing, browse the calendar and export a CSV tracker. Demo data stays in browser storage. Demo actions never call Anthropic, Publer, the database or Blob storage. Demo uploads are limited to 1 MB each and about 4 MB total browser storage; live limits are higher.
+Open `http://localhost:3000`. With no credentials configured, the app opens a clearly labeled **demo workspace**. You can create/edit briefs, upload small sample media, switch platform previews, simulate publishing, browse the calendar and export a CSV tracker. Demo data stays in browser storage. Demo actions never call OpenAI, Publer, the database or Blob storage. Demo uploads are limited to 1 MB each and about 4 MB total browser storage; live limits are higher.
 
 ## Deploy a new Vercel project
 
@@ -44,7 +44,7 @@ Vercel login is completed in your own browser. This project does not include som
 
 ## Turn on live mode
 
-You need three services besides the Vercel application: Neon Postgres, Vercel Blob, and your existing Publer/Anthropic accounts. Their quotas and charges depend on your plans.
+You need three services besides the Vercel application: Neon Postgres, Vercel Blob, and your existing Publer/OpenAI accounts. Their quotas and charges depend on your plans.
 
 ### 1. Database
 
@@ -78,8 +78,12 @@ Add these in **Vercel → Project → Settings → Environment Variables** for t
 | `DATABASE_URL` | Neon connection string |
 | `BLOB_READ_WRITE_TOKEN` | Token from the connected public Blob store |
 | `BLOB_PUBLIC_ORIGIN` | Exact public Blob HTTPS origin |
-| `ANTHROPIC_API_KEY` | Your Anthropic API key |
-| `ANTHROPIC_MODEL` | Optional; defaults to `claude-sonnet-5` |
+| `OPENAI_API_KEY` | Your OpenAI API key |
+| `OPENAI_MODEL` | `gpt-6-astra`, or another GPT model available in your OpenAI API account |
+| `OPENAI_MODEL_FAST` | Optional faster/cheaper model for per-post copy; defaults to `OPENAI_MODEL` |
+| `WEEKLY_MAX_AI_CALLS` | Optional weekly call guardrail; defaults to `400` |
+| `CRON_SECRET` | Random secret of at least 32 characters for `/api/cron/tick` |
+| `APP_URL` | Your deployed app URL, used by the GitHub Actions tick fallback |
 | `PUBLER_API_KEY` | Your Publer API key, without the `Bearer-API` prefix |
 | `PUBLER_WORKSPACE_ID` | Your intended Publer workspace ID |
 
@@ -92,6 +96,26 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 None of these variables uses a `NEXT_PUBLIC_` prefix. They must remain server-side. Rotate `SESSION_SECRET` to invalidate existing sessions. Password changes alone do not invalidate already signed sessions, so rotate both if access must be revoked immediately. Sessions expire after twelve hours. This is a single-admin studio, not a multi-user application.
 
 If you don't know the workspace ID: configure your Publer key and all login/storage variables, redeploy, sign in and click Sync Publer accounts. The Connections page lists accessible workspace IDs. Set the intended ID in Vercel, redeploy and sync again. Create new jobs after selecting the workspace; job/import state is intentionally bound to its original workspace.
+
+## Weekly workflow
+
+Use **This Week** for the owner workflow: topics and media in, a week of approved scheduled posts out.
+
+1. **Connections → Sync Publer accounts.** Map each account/channel to a persona: RX national, Lucknow local, Shubham personal, or blended personal visual-aid.
+2. **This Week → add topics.** Ek line me topic likho: `topic | keyword | notes`. Add 3-15 topics.
+3. **Upload videos/images.** Video ke liye notes zaroor do, because the AI cannot watch video files. Notes explain what the video shows.
+4. **Build week.** The planner creates channel slots across Monday-Sunday, rotates topics, avoids duplicate YouTube video use, and reports shortfalls when more videos are needed.
+5. **Wait for drafts.** Cron/background tick researches, writes and reviews drafts. Browser band karne ke baad bhi cron drafts banata rahega when configured.
+6. **Approve all valid.** Approval schedules valid posts in Publer at the planned IST slots. `needs_fix` drafts stay isolated and do not block the rest of the week.
+
+### Background cron
+
+The project ships two tick options:
+
+- `vercel.json` includes `/api/cron/tick` every 10 minutes. Vercel Hobby plans may only allow daily cron frequency, so use Vercel Pro for frequent ticks.
+- `.github/workflows/rx-tick.yml` is the free fallback. Add GitHub repo secrets `APP_URL` and `CRON_SECRET`; it calls `/api/cron/tick?limit=6` every 10 minutes.
+
+The cron route requires `Authorization: Bearer CRON_SECRET`. It performs one saved phase per job and stops before the serverless timeout. Ambiguous Publer writes still go to `needs_attention` and are not blindly retried.
 
 ### 4. Redeploy and verify
 
@@ -148,7 +172,7 @@ npm run start
 
 For local live testing, copy `.env.example` to `.env.local` and set your variables. Use `npm run dev` for non-secure localhost cookies; deployed production uses secure, HTTP-only, SameSite=Strict cookies. Use Vercel Preview deployments to verify the full Blob callback flow.
 
-Local production build and automated tests are recorded in [VALIDATION.md](VALIDATION.md). Live Neon/Blob/Anthropic/Publer acceptance and actual Vercel deployment require your account access and are not represented as tested.
+Local production build and automated tests are recorded in [VALIDATION.md](VALIDATION.md). Live Neon/Blob/OpenAI/Publer acceptance and actual Vercel deployment require your account access and are not represented as tested.
 
 ## Troubleshooting
 
@@ -166,7 +190,7 @@ Local production build and automated tests are recorded in [VALIDATION.md](VALID
 | Media acceptance uncertain | Inspect Publer and the downloaded job JSON; do not blindly create a duplicate |
 | Publer request fails with partial success | Reconcile successful accounts; create a new job only for confirmed failures |
 | Image/video removed but storage unchanged | Detaching media does not delete the Blob; manage storage in Vercel |
-| Research call timed out | Retry the saved phase; check Anthropic model access and balance |
+| Research call timed out | Retry the saved phase; check OpenAI model access and balance |
 
 ## Official references
 
@@ -174,4 +198,4 @@ Local production build and automated tests are recorded in [VALIDATION.md](VALID
 - [Vercel Blob browser uploads](https://vercel.com/docs/vercel-blob/client-upload)
 - [Publer quickstart](https://publer.com/docs/getting-started/quickstart.md)
 - [Publer format reference](https://publer.com/docs/posting/create-posts/networks.md)
-- [Anthropic web search](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool)
+- [OpenAI Responses API](https://platform.openai.com/docs/api-reference/responses)
