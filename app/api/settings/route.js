@@ -7,7 +7,7 @@ export async function GET(req){try{authorize(req);return Response.json({...await
 export async function POST(req){try{
   authorize(req,{write:true});let body={};try{body=await req.json();}catch{}
   if(body.action==='save_channels'){const value=normalizeChannels(body.channels);const errors=validateChannelMappings(value);if(errors.length)throw new Error(errors.join('; '));await saveSetting('channels',value);return Response.json({channels:value,message:'Channel personas saved.'});}
-  await publer('GET','/me');const ws=await publer('GET','/workspaces');const workspaces=Array.isArray(ws)?ws:ws.workspaces;
+  const ws=await publer('GET','/workspaces');const workspaces=Array.isArray(ws)?ws:ws.workspaces;
   if(!process.env.PUBLER_WORKSPACE_ID){const value={workspaces,accounts:[],options:[]};await saveSettings(value);return Response.json({...value,message:'Set PUBLER_WORKSPACE_ID to one of the listed IDs in Vercel, redeploy, then sync again.'});}
   if(!workspaces?.some(w=>w.id===process.env.PUBLER_WORKSPACE_ID))throw new Error('Configured workspace is not accessible.');
   const a=await publer('GET','/accounts'),accounts=Array.isArray(a)?a:a.accounts;if(!Array.isArray(accounts))throw new Error('Unexpected accounts response.');
