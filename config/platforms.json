@@ -1,0 +1,11 @@
+{
+  "instagram": {"enabled":true,"limit":2200,"hashtags":[8,15],"account_ids":[]},
+  "facebook": {"enabled":true,"limit":10000,"hashtags":[2,4],"account_ids":[]},
+  "linkedin": {"enabled":true,"limit":3000,"hashtags":[3,5],"account_ids":[]},
+  "youtube": {"enabled":true,"limit":5000,"hashtags":[3,5],"account_ids":[]},
+  "google": {"enabled":true,"limit":1500,"hashtags":[0,5],"account_ids":[]},
+  "pinterest": {"enabled":true,"limit":500,"hashtags":[0,5],"account_ids":[],"board_id":""},
+  "twitter": {"enabled":true,"limit":280,"hashtags":[1,2],"account_ids":[]},
+  "threads": {"enabled":true,"limit":500,"hashtags":[0,5],"account_ids":[]},
+  "tiktok": {"enabled":true,"limit":2200,"hashtags":[0,10],"account_ids":[]}
+}
