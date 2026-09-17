@@ -1,0 +1,64 @@
+{
+  "company_facts": {
+    "name": "RX Design Hub",
+    "established": "2024",
+    "location": "Vikas Nagar, Lucknow, Uttar Pradesh",
+    "reach": "4,200+ pharma companies pan-India",
+    "services": ["Visual Aids", "Diaries", "Chit Pads", "Prescription Pads", "Bill Books", "Customized Pens", "Paper Weights", "Reminder Cards", "Chemist Books"]
+  },
+  "personas": {
+    "rx_national": {
+      "label": "RX Design Hub",
+      "audience": "Pharma companies, PCD/franchise companies and marketing managers across India",
+      "voice": "B2B, credible and practical. Focus on visual aids, prescription pads, diaries, chit pads, bill books, customized pens, reminder cards, brand consistency, print finish and MR detailing material.",
+      "cta_url": "https://rxdesignhub.com",
+      "language": "hinglish",
+      "hashtag_seeds": ["#PharmaMarketing", "#VisualAid", "#PharmaBranding", "#RXDesignHub"],
+      "local_keywords": ["pan-India", "pharma companies"]
+    },
+    "lucknow_local": {
+      "label": "Visual Aid Pharma Lucknow",
+      "audience": "Pharma companies, distributors and MRs in Lucknow and nearby Uttar Pradesh",
+      "voice": "Local SEO heavy, nearby and accessible. Use Lucknow naturally plus local service context.",
+      "cta_url": "https://rxdesignhub.com",
+      "language": "hinglish",
+      "hashtag_seeds": ["#Lucknow", "#PharmaVisualAid", "#VisualAidLucknow", "#PharmaPrinting"],
+      "local_keywords": ["Lucknow", "Vikas Nagar", "Uttar Pradesh"]
+    },
+    "personal": {
+      "label": "Shubham Kumar",
+      "audience": "Founders, pharma entrepreneurs and small-business owners",
+      "voice": "First-person founder voice. Talk about bootstrapping, business automation, pharma branding insights and lessons from building RX Design Hub. No fake stories or invented numbers.",
+      "cta_url": "https://shubhamkumar.co.in",
+      "language": "hinglish",
+      "hashtag_seeds": ["#FounderJourney", "#BusinessAutomation", "#PharmaBranding", "#SmallBusiness"],
+      "local_keywords": []
+    },
+    "blend_personal_visualaid": {
+      "label": "Founder + Visual Aid",
+      "audience": "Mixed founder and pharma-branding audience",
+      "voice": "Alternate between Shubham's founder voice and RX Design Hub's practical pharma visual-aid angle.",
+      "cta_url": "https://rxdesignhub.com",
+      "language": "hinglish",
+      "blend_ratio": 0.5,
+      "hashtag_seeds": ["#PharmaBranding", "#FounderJourney", "#VisualAid", "#BusinessAutomation"],
+      "local_keywords": ["Lucknow", "pan-India"]
+    }
+  },
+  "channels": [
+    {"id": "facebook_rx", "platform": "facebook", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["10:15", "16:15"]},
+    {"id": "facebook_shubham", "platform": "facebook", "label": "Shubham Kumar", "persona": "personal", "enabled": true, "posts_per_week": 8, "time_slots": ["11:15", "18:15"]},
+    {"id": "facebook_lucknow", "platform": "facebook", "label": "Visual Aid Pharma Lucknow", "persona": "lucknow_local", "enabled": true, "posts_per_week": 8, "time_slots": ["09:45", "17:45"]},
+    {"id": "instagram_rx", "platform": "instagram", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["10:45", "19:15"]},
+    {"id": "instagram_lucknow", "platform": "instagram", "label": "Pharma Visual Aid in Lucknow", "persona": "lucknow_local", "enabled": true, "posts_per_week": 8, "time_slots": ["12:15", "20:15"]},
+    {"id": "instagram_personal", "platform": "instagram", "label": "Shubham Kumar", "persona": "personal", "enabled": false, "posts_per_week": 8, "time_slots": ["18:45"]},
+    {"id": "youtube_rx", "platform": "youtube", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["13:15", "20:45"], "angle_mix": {"lucknow_local": 0.3}},
+    {"id": "youtube_shubham", "platform": "youtube", "label": "Shubham Kumar", "persona": "personal", "enabled": true, "posts_per_week": 8, "time_slots": ["14:45", "21:15"]},
+    {"id": "linkedin_shubham", "platform": "linkedin", "label": "Shubham Kumar", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["09:30", "17:15"]},
+    {"id": "pinterest_visualaid", "platform": "pinterest", "label": "Shubham Kumar / Visual Aid", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["08:45", "19:45"], "default_board": ""},
+    {"id": "google_visualaid", "platform": "google", "label": "Visual Aid + personal", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["11:45", "16:45"]},
+    {"id": "twitter_future", "platform": "twitter", "label": "X / Twitter", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]},
+    {"id": "threads_future", "platform": "threads", "label": "Threads", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]},
+    {"id": "tiktok_future", "platform": "tiktok", "label": "TikTok", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]}
+  ]
+}
