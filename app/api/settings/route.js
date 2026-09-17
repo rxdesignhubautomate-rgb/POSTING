@@ -1,9 +1,9 @@
 import { authorize,errorResponse } from '../../../lib/auth';
-import { settings,saveSettings,getSetting,saveSetting } from '../../../lib/db';
+import { settings,saveSettings,getSetting,saveSetting,databaseUrl } from '../../../lib/db';
 import { publer } from '../../../lib/publer';
 import { defaultChannels,normalizeChannels,validateChannelMappings } from '../../../lib/channels';
 export const runtime='nodejs';export const maxDuration=120;
-export async function GET(req){try{authorize(req);return Response.json({...await settings(),channels:normalizeChannels(await getSetting('channels',defaultChannels())),configured:{database:Boolean(process.env.DATABASE_URL||process.env.POSTGRES_URL),blob:Boolean(process.env.BLOB_READ_WRITE_TOKEN&&process.env.BLOB_PUBLIC_ORIGIN),publer:Boolean(process.env.PUBLER_API_KEY),workspace:Boolean(process.env.PUBLER_WORKSPACE_ID),openai:Boolean(process.env.OPENAI_API_KEY)},workspace_id:process.env.PUBLER_WORKSPACE_ID??''});}catch(e){return errorResponse(e);}}
+export async function GET(req){try{authorize(req);return Response.json({...await settings(),channels:normalizeChannels(await getSetting('channels',defaultChannels())),configured:{database:Boolean(databaseUrl()),blob:Boolean(process.env.BLOB_READ_WRITE_TOKEN&&process.env.BLOB_PUBLIC_ORIGIN),publer:Boolean(process.env.PUBLER_API_KEY),workspace:Boolean(process.env.PUBLER_WORKSPACE_ID),openai:Boolean(process.env.OPENAI_API_KEY)},workspace_id:process.env.PUBLER_WORKSPACE_ID??''});}catch(e){return errorResponse(e);}}
 export async function POST(req){try{
   authorize(req,{write:true});let body={};try{body=await req.json();}catch{}
   if(body.action==='save_channels'){const value=normalizeChannels(body.channels);const errors=validateChannelMappings(value);if(errors.length)throw new Error(errors.join('; '));await saveSetting('channels',value);return Response.json({channels:value,message:'Channel personas saved.'});}

@@ -24,6 +24,6 @@ The dashboard was opened locally in demo mode and the main workflow was checked:
 
 Weekly autopilot coverage now includes planner slot generation, deterministic planning, YouTube video reuse limits, shortfall reporting, persona validation, cron authorization, existing route safety, model payloads, engine safety and auth.
 
-Demo mode is intentional when `ADMIN_PASSWORD` is missing or `DEMO_MODE=true`. Production mode requires the environment variables listed in `.env.example`, the Neon SQL schema in `schema.sql`, Vercel Blob storage, OpenAI API access, Publer API access, and a configured cron trigger.
+Demo mode is intentional when `ADMIN_PASSWORD` is missing or `DEMO_MODE=true`. Production mode requires the environment variables listed in `.env.example`, the Neon SQL schema in `schema.sql`, Vercel Blob storage, OpenAI API access, Publer API access, and a configured cron trigger. Database URL fallbacks include `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `POSTGRES_URL`, `DATABSE_...`, and `DATABSEE_...`.
 
 Live Neon/Blob/OpenAI/Publer acceptance and real social posting still require your account credentials and manual Publer verification.

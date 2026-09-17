@@ -79,8 +79,10 @@ Add these in **Vercel → Project → Settings → Environment Variables** for t
 | `BLOB_READ_WRITE_TOKEN` | Token from the connected public Blob store |
 | `BLOB_PUBLIC_ORIGIN` | Exact public Blob HTTPS origin |
 | `OPENAI_API_KEY` | Your OpenAI API key |
-| `OPENAI_MODEL` | `gpt-6-astra`, or another GPT model available in your OpenAI API account |
-| `OPENAI_MODEL_FAST` | Optional faster/cheaper model for per-post copy; defaults to `OPENAI_MODEL` |
+| `AI_MODEL` | Main OpenAI model; defaults to `gpt-5.6-terra` |
+| `AI_MODEL_FAST` | Optional faster/cheaper model for per-post copy; defaults to `gpt-5.6-luna` |
+| `OPENAI_MODEL` | Legacy alias, still accepted |
+| `OPENAI_MODEL_FAST` | Legacy fast-model alias, still accepted |
 | `WEEKLY_MAX_AI_CALLS` | Optional weekly call guardrail; defaults to `400` |
 | `CRON_SECRET` | Random secret of at least 32 characters for `/api/cron/tick` |
 | `APP_URL` | Your deployed app URL, used by the GitHub Actions tick fallback |
@@ -96,6 +98,8 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 None of these variables uses a `NEXT_PUBLIC_` prefix. They must remain server-side. Rotate `SESSION_SECRET` to invalidate existing sessions. Password changes alone do not invalidate already signed sessions, so rotate both if access must be revoked immediately. Sessions expire after twelve hours. This is a single-admin studio, not a multi-user application.
 
 If you don't know the workspace ID: configure your Publer key and all login/storage variables, redeploy, sign in and click Sync Publer accounts. The Connections page lists accessible workspace IDs. Set the intended ID in Vercel, redeploy and sync again. Create new jobs after selecting the workspace; job/import state is intentionally bound to its original workspace.
+
+If Neon created variables with your database prefix instead of `DATABASE_URL`, the app also accepts `DATABSE_DATABASE_URL_UNPOOLED`, `DATABSE_POSTGRES_URL`, `DATABSE_POSTGRES_PRISMA_URL`, `DATABSE_POSTGRES_URL_NO_SSL`, and the same `DATABSEE_...` spellings.
 
 ## Weekly workflow
 
