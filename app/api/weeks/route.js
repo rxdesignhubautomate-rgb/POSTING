@@ -6,9 +6,9 @@ import { createWeeklyPlan } from '../../../lib/weekEngine';
 export const runtime='nodejs';export const maxDuration=300;
 export async function GET(req){try{
   authorize(req);
-  const weeks=await Promise.all((await listWeeks()).map(async w=>({...w,jobs:await listWeekJobs(w.id)})));
+  const weeks=await Promise.all((await listWeeks()).map(async w=>({...w,jobs:(await listWeekJobs(w.id)).filter(j=>j.status!=='archived')})));
   const known=new Set(weeks.map(w=>w.id)),imported=new Map();
-  for(const job of (await listJobs(5000)).filter(j=>j.source==='calendar_import'&&j.week_id&&!known.has(j.week_id))){
+  for(const job of (await listJobs(5000)).filter(j=>j.status!=='archived'&&j.source==='calendar_import'&&j.week_id&&!known.has(j.week_id))){
     const week=imported.get(job.week_id)??{id:job.week_id,week_start:job.week_id,topics:[],status:'queued',stats:{slots:0,shortfalls:0},plan:{shortfalls:[]},media:[],jobs:[],source:'calendar_import'};
     week.jobs.push(job);week.stats.slots=week.jobs.length;imported.set(job.week_id,week);
   }
