@@ -28,7 +28,8 @@ export async function POST(req,{params}){try{
       if(media.type==='image'&&!actual.contentType.startsWith('image/')||media.type==='video'&&!actual.contentType.startsWith('video/'))throw new Error('Media type mismatch.');
       media.size=actual.size;if(media.size>(media.type==='image'?20:200)*1024*1024)throw new Error('Images max 20 MB; videos max 200 MB.');
       if(job.media.some(m=>m.url===media.url))return;
-      if(job.media.length>=10||job.media.length&&(media.type==='video'||job.media[0].type==='video'))throw new Error('Use 1–10 images or one video.');
+      if(media.type==='video'&&job.media.some(m=>m.type==='video'))throw new Error('Use only one video per daily post.');
+      if(media.type==='image'&&job.media.filter(m=>m.type==='image').length>=10)throw new Error('Use up to ten images per daily post.');
       job.media.push(media);job.content={};job.research=null;job.research_history=[];job.research_evidence=[];job.audit=null;job.audit_digest=null;job.status='draft';
     }else if(action==='remove_media'){
       assertEditable(job);job.media=job.media.filter(m=>m.url!==body.url);job.content={};job.audit=null;job.audit_digest=null;job.status='draft';

@@ -48,6 +48,8 @@ describe('calendar import parsing and validation',()=>{
     expect(combined[0]).toMatchObject({external_id:'rx-daily-2026-10-05',import_mode:'daily_combined'});
     expect(combined[0].brief.platforms.sort()).toEqual(['instagram','linkedin']);
     expect(combined[0].imported_external_ids.sort()).toEqual(['rx-1','rx-2']);
+    expect(combined[0].media_idea.summary).toContain('Product photo');
+    expect(combined[0].media_idea.shots.length).toBeGreaterThan(2);
   });
 });
 
