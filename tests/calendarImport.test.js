@@ -1,5 +1,5 @@
 import { describe,it,expect } from 'vitest';
-import { parseCsv,validateImportRows,autoMatchMedia,autoMatchMediaByDate,exportImportRows,toCsv,IMPORT_HEADERS } from '../lib/calendarImport';
+import { combineValidImports,parseCsv,validateImportRows,autoMatchMedia,autoMatchMediaByDate,exportImportRows,toCsv,IMPORT_HEADERS } from '../lib/calendarImport';
 import { defaultChannels } from '../lib/channels';
 
 const header=IMPORT_HEADERS.join(',');
@@ -38,6 +38,16 @@ describe('calendar import parsing and validation',()=>{
     const report=validateImportRows(parseCsv(`${header}\n${base}`),{settings:defaultChannels(),existingJobs:[existing],now:new Date('2026-09-18T00:00:00+05:30')});
     expect(report.would_update).toBe(0);
     expect(report.would_skip).toBe(1);
+  });
+
+  it('combines all rows on one date into one editable multi-platform job',()=>{
+    const second=base.replace('rx-1','rx-2').replace('li_shubham','ig_rx').replace('Text post','Static').replace('2026-10-05T09:30:00+05:30','2026-10-05T12:00:00+05:30');
+    const report=validateImportRows(parseCsv(`${header}\n${base}\n${second}`),{settings:defaultChannels(),existingJobs:[],now:new Date('2026-09-18T00:00:00+05:30')});
+    const combined=combineValidImports(report.valid);
+    expect(combined).toHaveLength(1);
+    expect(combined[0]).toMatchObject({external_id:'rx-daily-2026-10-05',import_mode:'daily_combined'});
+    expect(combined[0].brief.platforms.sort()).toEqual(['instagram','linkedin']);
+    expect(combined[0].imported_external_ids.sort()).toEqual(['rx-1','rx-2']);
   });
 });
 

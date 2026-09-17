@@ -107,7 +107,7 @@ export default function Studio(){
     if(!response.ok)throw new Error(data.error??'Import dry run failed.');
     const d=data.dryRun,firstErrors=d.errors.slice(0,5).map(e=>`Row ${e.row}: ${e.message}`).join('\n');
     if(d.errors.length)throw new Error(`Dry run found ${d.errors.length} issue(s).\n${firstErrors}`);
-    const ok=confirm(`Import calendar?\n\nRows parsed: ${d.rows_parsed}\nValid: ${d.rows_valid}\nCreate: ${d.would_create}\nUpdate: ${d.would_update}\nSkip delivered: ${d.would_skip}`);
+    const ok=confirm(`Import calendar?\n\nRows parsed: ${d.rows_parsed}\nValid rows: ${d.rows_valid}\nCombined daily posts: ${d.combined_posts??d.rows_valid}\nCreate: ${d.would_create}\nUpdate: ${d.would_update}\nSkip delivered: ${d.would_skip}`);
     if(!ok)return;
     form.set('confirm','true');response=await fetch('/api/import',{method:'POST',body:form,cache:'no-store'});data=await response.json();
     if(!response.ok)throw new Error(data.error??'Import failed.');
@@ -188,5 +188,6 @@ export default function Studio(){
     {modal&&<div className="modal-backdrop" onClick={()=>setModal(null)}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="publish-title" onClick={e=>e.stopPropagation()}><button className="modal-close" aria-label="Close dialog" onClick={()=>setModal(null)}><X size={20}/></button><span className="modal-icon">{modal==='schedule'?<CalendarDays/>:modal==='draft'?<FileText/>:<Send/>}</span><h2 id="publish-title">{demo?'Simulate this action?':modal==='draft'?'Create a Publer draft?':modal==='schedule'?'Choose the right moment.':'Ready to publish now?'}</h2><p>{demo?'This saves a demonstration status in this browser. No upload, schedule or publication happens in Publer.':modal==='draft'?'Your selected channels and content will be sent to Publer as a draft for review.':modal==='now'?'This sends your post to the selected social accounts immediately. Review the content before confirming.':'Publer will schedule your post for the time below. Threads is skipped for scheduled posts.'}</p><div className="modal-platforms">{platforms.map(p=><span key={p}><Mark p={p} small/>{PLATFORM[p].name}</span>)}</div>{modal==='schedule'&&<label>Publish at · Asia/Kolkata<input type="datetime-local" value={schedule} onChange={e=>setSchedule(e.target.value)}/></label>}<div className="modal-buttons"><button className="secondary" onClick={()=>setModal(null)}>Keep editing</button><button className="primary" onClick={()=>submit(modal)}>{demo?'Simulate':modal==='draft'?'Create draft':modal==='schedule'?'Confirm schedule':'Yes, publish now'}<ArrowRight size={16}/></button></div></section></div>}
   </div>;
 }
+
 
 
