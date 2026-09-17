@@ -12,7 +12,7 @@ export async function GET(req){try{
     const week=imported.get(job.week_id)??{id:job.week_id,week_start:job.week_id,topics:[],status:'queued',stats:{slots:0,shortfalls:0},plan:{shortfalls:[]},media:[],jobs:[],source:'calendar_import'};
     week.jobs.push(job);week.stats.slots=week.jobs.length;imported.set(job.week_id,week);
   }
-  return Response.json([...weeks,...imported.values()].sort((a,b)=>String(b.week_start).localeCompare(String(a.week_start))));
+  return Response.json([...weeks,...imported.values()].sort((a,b)=>String(a.week_start).localeCompare(String(b.week_start))));
 }catch(e){return errorResponse(e);}}
 export async function POST(req){try{
   authorize(req,{write:true});const body=await req.json();
