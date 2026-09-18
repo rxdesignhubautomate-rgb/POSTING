@@ -26,6 +26,9 @@ it('splits same-platform profiles into separate posts with profile-specific copy
   const j={...job,brief:{...brief,targets:{facebook:['fb','fb2']}},content:{facebook:{text:'fallback'},'facebook:fb':{text:'RX page copy'},'facebook:fb2':{text:'personal copy'}}};
   const posts=buildPayload(j,'draft',null,accounts).payload.bulk.posts;
   expect(posts).toHaveLength(2);
+  expect(posts.every(p=>p.accounts)).toBe(true);
+  expect(posts.every(p=>p.accounts.length===1)).toBe(true);
+  expect(posts.every(p=>!p.networks.default)).toBe(true);
   expect(posts.find(p=>p.accounts[0].id==='fb').networks.facebook.text).toBe('RX page copy');
   expect(posts.find(p=>p.accounts[0].id==='fb2').networks.facebook.text).toBe('personal copy');
 });
