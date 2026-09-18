@@ -23,3 +23,9 @@ it('applies persona validation rules',()=>{
   const local={...base,persona_key:'lucknow_local'};
   expect(validate('facebook',{text:'visual aid printing for India brands https://rxdesignhub.com #One #Two'},local,cfg).join(' ')).toMatch(/Lucknow/i);
 });
+
+it('blocks medical efficacy claims from visual-aid artwork',()=>{
+  const brief={...base,primary_keyword:'visual aid design',persona_key:'rx_national',language:'english'};
+  const text='visual aid design sample improves PCOS and reduces the risk of heart attack https://rxdesignhub.com #VisualAid #Pharma';
+  expect(validate('facebook',{text},brief,cfg).join(' ')).toMatch(/medical/i);
+});
