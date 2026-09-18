@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { head } from '@vercel/blob';
 import { authorize,errorResponse,redact } from '../../../../lib/auth';
 import { getJob,withJob,settings } from '../../../../lib/db';
-import { briefSchema,mediaSchema,assertEditable,providers } from '../../../../lib/model';
+import { briefSchema,mediaSchema,assertEditable } from '../../../../lib/model';
 import { contentSchema } from '../../../../lib/validate';
 import { step,importStep,deliver,checkDelivery } from '../../../../lib/engine';
 import { publer } from '../../../../lib/publer';
@@ -16,7 +16,7 @@ export async function POST(req,{params}){try{
     if(action==='save'){
       assertEditable(job);const next=briefSchema.parse(body.brief);
       const changed=['topic','primary_keyword','language','notes','cta_url'].some(k=>next[k]!==job.brief[k]);
-      job.brief=next;job.content=changed?{}:z.record(z.enum(providers),contentSchema).parse(body.content??job.content);
+      job.brief=next;job.content=changed?{}:z.record(z.string(),contentSchema).parse(body.content??job.content);
       if(changed){job.research=null;job.research_history=[];job.research_evidence=[];}
       job.audit=null;job.audit_digest=null;job.status=Object.keys(job.content).length?'needs_review':'draft';job.error=null;
     }else if(action==='media'){
@@ -35,6 +35,9 @@ export async function POST(req,{params}){try{
       assertEditable(job);job.media=job.media.filter(m=>m.url!==body.url);job.content={};job.audit=null;job.audit_digest=null;job.status='draft';
     }else if(action==='generate'){
       assertEditable(job);try{await step(job,save);}catch(e){job.error=redact(e.message);await save();throw e;}
+    }else if(action==='regenerate'){
+      assertEditable(job);job.content={};job.audit=null;job.audit_digest=null;job.error=null;job.status='draft';
+      try{await step(job,save);}catch(e){job.error=redact(e.message);await save();throw e;}
     }else if(action==='import')await importStep(job,save);
     else if(action==='deliver'){
       const live=await publer('GET','/accounts');const accounts=Array.isArray(live)?live:live.accounts;if(!Array.isArray(accounts))throw new Error('Unexpected accounts response.');
