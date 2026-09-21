@@ -5,6 +5,7 @@ import { getJob,withJob,settings } from '../../../../lib/db';
 import { briefSchema,mediaSchema,assertEditable } from '../../../../lib/model';
 import { contentSchema } from '../../../../lib/validate';
 import { step,importStep,deliver,checkDelivery,reopenFailedDelivery } from '../../../../lib/engine';
+import { auditPlatform,generatePlatform } from '../../../../lib/ai';
 import { publer } from '../../../../lib/publer';
 export const runtime='nodejs';export const maxDuration=300;
 export async function GET(req,{params}){try{authorize(req);const {id}=await params;const {research_history,research_evidence,...job}=await getJob(id);return Response.json(job);}catch(e){return errorResponse(e);}}
@@ -18,7 +19,7 @@ export async function POST(req,{params}){try{
       const changed=['topic','primary_keyword','language','notes','cta_url'].some(k=>next[k]!==job.brief[k]);
       job.brief=next;job.content=changed?{}:z.record(z.string(),contentSchema).parse(body.content??job.content);
       if(changed){job.research=null;job.research_history=[];job.research_evidence=[];}
-      job.audit=null;job.audit_digest=null;job.status=Object.keys(job.content).length?'needs_review':'draft';job.error=null;
+      job.audit=null;job.audit_digest=null;job.platform_audits={};job.status=Object.keys(job.content).length?'needs_review':'draft';job.error=null;
     }else if(action==='media'){
       assertEditable(job);const media=mediaSchema.parse(body.media),url=new URL(media.url);
       const origin=process.env.BLOB_PUBLIC_ORIGIN?.replace(/\/$/,'');
@@ -35,8 +36,19 @@ export async function POST(req,{params}){try{
       assertEditable(job);job.media=job.media.filter(m=>m.url!==body.url);job.content={};job.audit=null;job.audit_digest=null;job.status='draft';
     }else if(action==='generate'){
       assertEditable(job);try{await step(job,save);}catch(e){job.error=redact(e.message);await save();throw e;}
+    }else if(action==='review_platform'){
+      assertEditable(job);const key=String(body.key??'');
+      if(!Object.prototype.hasOwnProperty.call(job.content??{},key))throw new Error('Platform copy target was not found.');
+      const result=await auditPlatform(job,key);job.platform_audits={...(job.platform_audits??{}),[key]:result};
+    }else if(action==='regenerate_platform'){
+      assertEditable(job);const key=String(body.key??''),instructions=String(body.instructions??'').trim();
+      if(instructions.length>1000)throw new Error('Regeneration instructions must be 1000 characters or fewer.');
+      if(!Object.prototype.hasOwnProperty.call(job.content??{},key))throw new Error('Platform copy target was not found.');
+      const p=key.includes(':')?key.split(':')[0]:(job.destinations??[]).find(d=>d.key===key)?.platform??key;
+      await generatePlatform(job,p,{targetKey:key,instructions});
+      job.platform_audits={...(job.platform_audits??{})};delete job.platform_audits[key];job.audit=null;job.audit_digest=null;job.status='needs_review';job.error=null;
     }else if(action==='regenerate'){
-      assertEditable(job);job.content={};job.audit=null;job.audit_digest=null;job.error=null;job.status='draft';
+      assertEditable(job);job.content={};job.audit=null;job.audit_digest=null;job.platform_audits={};job.error=null;job.status='draft';
       try{await step(job,save);}catch(e){job.error=redact(e.message);await save();throw e;}
     }else if(action==='import')await importStep(job,save);
     else if(action==='deliver'){

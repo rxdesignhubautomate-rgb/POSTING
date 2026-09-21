@@ -37,3 +37,30 @@ it('gives the compliance reviewer the uploaded image evidence',async()=>{
   expect(requestBody.input[0].content.some(item=>item.type==='input_image')).toBe(true);
   expect(job.audit.approved).toBe(true);
 });
+
+it('automatically repairs unsupported production and camera claims before approval',async()=>{
+  process.env.OPENAI_API_KEY='test';
+  const sample=await readFile(new URL('../public/sample.png',import.meta.url));
+  let modelCall=0;
+  global.fetch=vi.fn(async(url)=>{
+    if(String(url).startsWith('https://blob.example/'))return new Response(sample,{status:200,headers:{'Content-Type':'image/png'}});
+    modelCall++;
+    const value=modelCall===1
+      ?{approved:false,issues:['Pinterest and YouTube claim Spot UV, foil finish, and macro tilt shots not supported by the image.']}
+      :modelCall===2
+        ?{pinterest:{title:'Visual aid printing sample',description:'Visual aid printing sample with a clear page layout, readable hierarchy, and neutral paper presentation. https://rxdesignhub.com',alt_texts:['Printed visual aid sample showing layout and paper details.'],claims:[]}}
+        :{approved:true,issues:[]};
+    return new Response(JSON.stringify({status:'completed',output_text:JSON.stringify(value),output:[]}),{status:200,headers:{'Content-Type':'application/json'}});
+  });
+  const { audit }=await import('../lib/ai');
+  const job={
+    brief:{topic:'Visual aid printing',primary_keyword:'visual aid printing',language:'english',platforms:['pinterest'],cta_url:'https://rxdesignhub.com',notes:'',targets:{},boards:{}},
+    media:[{url:'https://blob.example/sample.png',name:'sample.png',type:'image'}],
+    research:{facts:[]},
+    content:{pinterest:{title:'Spot UV and foil finish',description:'Visual aid printing with macro tilt shots and moving light. https://rxdesignhub.com',alt_texts:['Printed sample.'],claims:[]}}
+  };
+  await audit(job);
+  expect(modelCall).toBe(3);
+  expect(job.content.pinterest.description).not.toMatch(/spot uv|foil|macro|tilt/i);
+  expect(job.audit).toMatchObject({approved:true,auto_repaired_issues:expect.arrayContaining([expect.stringContaining('Spot UV')])});
+});
