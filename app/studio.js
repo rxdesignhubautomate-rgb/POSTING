@@ -135,7 +135,7 @@ export default function Studio(){
   async function regeneratePlatformCopy(o){await perform(`Regenerating ${PLATFORM[o.platform]?.name??o.platform} copy`,async()=>{
     let current=job;if(dirty)current=await save();
     if(demo)throw new Error('Platform regeneration requires the connected private workspace.');
-    current=await api(`/api/jobs/${current.id}`,{action:'regenerate_platform',key:o.key,instructions:regenNotes[o.key]??''});replaceJob(current);setRegenNotes(s=>({...s,[o.key]:''}));notify(`${PLATFORM[o.platform]?.name??o.platform} copy regenerated. Check compliance when ready.`);
+    current=await api(`/api/jobs/${current.id}`,{action:'regenerate_platform',key:o.key,instructions:regenNotes[o.key]??''});replaceJob(current);setRegenNotes(s=>({...s,[o.key]:''}));const result=current.platform_audits?.[o.key];notify(result?.approved?`${PLATFORM[o.platform]?.name??o.platform} copy regenerated and compliance passed.`:`Copy regenerated, but ${result?.issues?.length??0} compliance correction(s) still need review.`,!result?.approved);
   });}
   async function submit(mode){setModal(null);await perform(mode==='schedule'?'Scheduling post':mode==='draft'?'Creating Publer draft':'Publishing post',async()=>{
     if(dirty)throw new Error('Save your changes and run content review before sending.');if(!job||job.status!=='ready')throw new Error('Generate and review content first.');

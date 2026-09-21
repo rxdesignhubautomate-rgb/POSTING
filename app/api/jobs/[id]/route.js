@@ -44,8 +44,16 @@ export async function POST(req,{params}){try{
       if(instructions.length>1000)throw new Error('Regeneration instructions must be 1000 characters or fewer.');
       if(!key)throw new Error('Platform copy target was not found.');
       const p=key.includes(':')?key.split(':')[0]:(job.destinations??[]).find(d=>d.key===key)?.platform??key;
-      await generatePlatform(job,p,{targetKey:key,instructions});
-      job.platform_audits={...(job.platform_audits??{})};delete job.platform_audits[key];job.audit=null;job.audit_digest=null;job.status='needs_review';job.error=null;
+      const previous=job.platform_audits?.[key]?.issues??[],guidance=[...previous],manual=instructions?`Editor request: ${instructions}`:'';
+      let result;
+      for(let attempt=0;attempt<2;attempt++){
+        const compliance=guidance.length?`Compliance corrections required:\n- ${guidance.join('\n- ')}`:'';
+        await generatePlatform(job,p,{targetKey:key,instructions:[manual,compliance].filter(Boolean).join('\n\n')});
+        result=await auditPlatform(job,key);
+        if(result.approved)break;
+        for(const issue of result.issues??[])if(!guidance.includes(issue))guidance.push(issue);
+      }
+      job.platform_audits={...(job.platform_audits??{}),[key]:result};job.audit=null;job.audit_digest=null;job.status='needs_review';job.error=null;
     }else if(action==='regenerate'){
       assertEditable(job);job.content={};job.audit=null;job.audit_digest=null;job.platform_audits={};job.error=null;job.status='draft';
       try{await step(job,save);}catch(e){job.error=redact(e.message);await save();throw e;}
