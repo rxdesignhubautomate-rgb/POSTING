@@ -38,12 +38,11 @@ export async function POST(req,{params}){try{
       assertEditable(job);try{await step(job,save);}catch(e){job.error=redact(e.message);await save();throw e;}
     }else if(action==='review_platform'){
       assertEditable(job);const key=String(body.key??'');
-      if(!Object.prototype.hasOwnProperty.call(job.content??{},key))throw new Error('Platform copy target was not found.');
       const result=await auditPlatform(job,key);job.platform_audits={...(job.platform_audits??{}),[key]:result};
     }else if(action==='regenerate_platform'){
       assertEditable(job);const key=String(body.key??''),instructions=String(body.instructions??'').trim();
       if(instructions.length>1000)throw new Error('Regeneration instructions must be 1000 characters or fewer.');
-      if(!Object.prototype.hasOwnProperty.call(job.content??{},key))throw new Error('Platform copy target was not found.');
+      if(!key)throw new Error('Platform copy target was not found.');
       const p=key.includes(':')?key.split(':')[0]:(job.destinations??[]).find(d=>d.key===key)?.platform??key;
       await generatePlatform(job,p,{targetKey:key,instructions});
       job.platform_audits={...(job.platform_audits??{})};delete job.platform_audits[key];job.audit=null;job.audit_digest=null;job.status='needs_review';job.error=null;

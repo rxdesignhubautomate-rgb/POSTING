@@ -64,3 +64,18 @@ it('automatically repairs unsupported production and camera claims before approv
   expect(job.content.pinterest.description).not.toMatch(/spot uv|foil|macro|tilt/i);
   expect(job.audit).toMatchObject({approved:true,auto_repaired_issues:expect.arrayContaining([expect.stringContaining('Spot UV')])});
 });
+
+it('checks account-specific cards that fall back to shared platform copy',async()=>{
+  process.env.OPENAI_API_KEY='test';
+  const sample=await readFile(new URL('../public/sample.png',import.meta.url));
+  global.fetch=vi.fn(async(url)=>String(url).startsWith('https://blob.example/')
+    ?new Response(sample,{status:200,headers:{'Content-Type':'image/png'}})
+    :new Response(JSON.stringify({status:'completed',output_text:JSON.stringify({approved:true,issues:[]}),output:[]}),{status:200,headers:{'Content-Type':'application/json'}}));
+  const { auditPlatform }=await import('../lib/ai');
+  const job={
+    brief:{topic:'Visual aid printing',primary_keyword:'visual aid printing',language:'english',platforms:['pinterest'],cta_url:'https://rxdesignhub.com',notes:'',targets:{pinterest:['pin-1']},boards:{}},
+    media:[{url:'https://blob.example/sample.png',name:'sample.png',type:'image'}],research:{facts:[]},
+    content:{pinterest:{title:'Visual aid printing sample',description:'Visual aid printing sample with clear layout and paper details. https://rxdesignhub.com',alt_texts:['Printed visual aid sample showing layout and paper details.'],claims:[]}}
+  };
+  await expect(auditPlatform(job,'pinterest:pin-1')).resolves.toMatchObject({approved:true,issues:[]});
+});
