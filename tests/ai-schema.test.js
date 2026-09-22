@@ -1,5 +1,16 @@
 import { it,expect,vi } from 'vitest';
 import { readFile } from 'node:fs/promises';
+import { charCount,trimSafely } from '../lib/validate';
+
+it('trims long single-paragraph Pinterest copy while preserving CTA and hashtags',()=>{
+  const description=`visual aid printing ${Array(120).fill('clear practical layout detail').join(' ')} https://rxdesignhub.com #PrintDesign #VisualAid`;
+  const result=trimSafely('pinterest',{description},500);
+  expect(charCount('pinterest',result.description)).toBeLessThanOrEqual(500);
+  expect(result.description).toContain('https://rxdesignhub.com');
+  expect(result.description).toContain('#PrintDesign');
+  expect(result.description).toContain('#VisualAid');
+  expect(result.description.startsWith('visual aid printing')).toBe(true);
+});
 
 it('accepts object-shaped competitor angles from research responses',async()=>{
   process.env.OPENAI_API_KEY='test';
