@@ -79,3 +79,26 @@ it('checks account-specific cards that fall back to shared platform copy',async(
   };
   await expect(auditPlatform(job,'pinterest:pin-1')).resolves.toMatchObject({approved:true,issues:[]});
 });
+
+it('repairs platform validation errors introduced by automatic compliance repair',async()=>{
+  process.env.OPENAI_API_KEY='test';
+  const validDescription=['pharma','visual','aid','printing',...Array(195).fill('practical'),'https://rxdesignhub.com','#PrintDesign','#VisualAid','#PharmaBranding'].join(' ');
+  let modelCall=0;
+  global.fetch=vi.fn(async()=>{
+    modelCall++;
+    const value=modelCall===1
+      ?{approved:false,issues:['Remove unsupported clinical references.']}
+      :modelCall===2
+        ?{youtube:{title:'pharma visual aid printing guide',description:'pharma visual aid printing with neutral layout. https://rxdesignhub.com #PrintDesign #VisualAid #PharmaBranding',tags:[],claims:[]}}
+        :modelCall===3
+          ?{title:'pharma visual aid printing guide',description:validDescription,tags:[],claims:[]}
+          :{approved:true,issues:[]};
+    return new Response(JSON.stringify({status:'completed',output_text:JSON.stringify(value),output:[]}),{status:200,headers:{'Content-Type':'application/json'}});
+  });
+  const { audit }=await import('../lib/ai');
+  const job={brief:{topic:'Visual aid printing',primary_keyword:'pharma visual aid printing',language:'english',platforms:['youtube'],cta_url:'https://rxdesignhub.com',notes:'',targets:{},boards:{}},media:[],research:{facts:[]},content:{youtube:{title:'pharma visual aid printing',description:validDescription,tags:[],claims:[]}}};
+  await audit(job);
+  expect(modelCall).toBe(4);
+  expect(job.content.youtube.description.split(/\s+/)).toHaveLength(203);
+  expect(job.audit.approved).toBe(true);
+});
