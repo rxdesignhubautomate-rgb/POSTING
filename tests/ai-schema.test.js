@@ -42,7 +42,7 @@ it('gives the compliance reviewer the uploaded image evidence',async()=>{
     brief:{topic:'Visual aid printing',primary_keyword:'visual aid printing',language:'english',platforms:['pinterest'],cta_url:'https://rxdesignhub.com',notes:'',targets:{},boards:{}},
     media:[{url:'https://blob.example/sample.png',name:'sample.png',type:'image'}],
     research:{facts:[]},
-    content:{pinterest:{title:'Visual aid sample',description:'A practical print example.',alt_texts:['Blue and white pages with a large heading and curved graphic bands.']}}
+    content:{pinterest:{title:'visual aid printing sample',description:'visual aid printing with a practical page layout. https://rxdesignhub.com',alt_texts:['Blue and white pages with a large heading and curved graphic bands.'],claims:[]}}
   };
   await audit(job);
   expect(requestBody.input[0].content.some(item=>item.type==='input_image')).toBe(true);
@@ -71,7 +71,7 @@ it('automatically repairs unsupported production and camera claims before approv
     content:{pinterest:{title:'Spot UV and foil finish',description:'Visual aid printing with macro tilt shots and moving light. https://rxdesignhub.com',alt_texts:['Printed sample.'],claims:[]}}
   };
   await audit(job);
-  expect(modelCall).toBe(3);
+  expect(modelCall).toBe(4);
   expect(job.content.pinterest.description).not.toMatch(/spot uv|foil|macro|tilt/i);
   expect(job.audit).toMatchObject({approved:true,auto_repaired_issues:expect.arrayContaining([expect.stringContaining('Spot UV')])});
 });
@@ -109,7 +109,30 @@ it('repairs platform validation errors introduced by automatic compliance repair
   const { audit }=await import('../lib/ai');
   const job={brief:{topic:'Visual aid printing',primary_keyword:'pharma visual aid printing',language:'english',platforms:['youtube'],cta_url:'https://rxdesignhub.com',notes:'',targets:{},boards:{}},media:[],research:{facts:[]},content:{youtube:{title:'pharma visual aid printing',description:validDescription,tags:[],claims:[]}}};
   await audit(job);
-  expect(modelCall).toBe(4);
+  expect(modelCall).toBe(5);
   expect(job.content.youtube.description.split(/\s+/)).toHaveLength(203);
+  expect(job.audit.approved).toBe(true);
+});
+
+it('automatically checks and regenerates failed platform copy during the main review',async()=>{
+  process.env.OPENAI_API_KEY='test';
+  let modelCall=0;
+  global.fetch=vi.fn(async()=>{
+    modelCall++;
+    const value=modelCall===1
+      ?{approved:true,issues:[]}
+      :modelCall===2
+        ?{approved:false,issues:['Remove unsupported foil finish claim.']}
+        :modelCall===3
+          ?{title:'visual aid printing layout guide',description:'visual aid printing with neutral layout, paper and colour hierarchy. https://rxdesignhub.com',claims:[]}
+          :{approved:true,issues:[]};
+    return new Response(JSON.stringify({status:'completed',output_text:JSON.stringify(value),output:[]}),{status:200,headers:{'Content-Type':'application/json'}});
+  });
+  const { audit }=await import('../lib/ai');
+  const job={brief:{topic:'Visual aid printing',primary_keyword:'visual aid printing',language:'english',platforms:['pinterest'],cta_url:'https://rxdesignhub.com',notes:'',targets:{},boards:{}},media:[],research:{facts:[]},content:{pinterest:{title:'visual aid printing with foil',description:'visual aid printing with a foil finish. https://rxdesignhub.com',claims:[]}}};
+  await audit(job);
+  expect(modelCall).toBe(5);
+  expect(job.content.pinterest.description).not.toMatch(/foil/i);
+  expect(job.platform_audits.pinterest.approved).toBe(true);
   expect(job.audit.approved).toBe(true);
 });
