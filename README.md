@@ -66,7 +66,7 @@ Find the origin from a Blob file URL/store details. Use only the `https://hostna
 
 Live media uploads go **directly from the browser to Blob**, avoiding Vercel Functions' request-body limit. Authenticated upload tokens restrict content type, pathname and size. Limits: 20 MB per image, 200 MB per video; 1–10 images or one video per post. Publer imports the media from those hosted URLs. Public Blob URLs are deliberately accessible to anyone with the link: use public marketing assets only.
 
-Removing media from a draft detaches it from the post; it does not delete the stored Blob. Manage permanently unused assets in Vercel storage. Archiving a draft preserves its database record.
+Removing media from an editable draft also deletes that job-owned Blob immediately. Archiving preserves the record until the configured retention window, after which daily cleanup removes the record and its managed media.
 
 ### 3. Environment variables
 
@@ -155,6 +155,8 @@ The project ships two tick options:
 - `.github/workflows/rx-tick.yml` is the free fallback. Add GitHub repo secrets `APP_URL` and `CRON_SECRET`; it calls `/api/cron/tick?limit=6` every 10 minutes.
 
 The cron route requires `Authorization: Bearer CRON_SECRET`. It performs one saved phase per job and stops before the serverless timeout. Ambiguous Publer writes still go to `needs_attention` and are not blindly retried.
+
+The same cron performs retention cleanup at most once per day. By default, it removes submitted posts seven days after they were sent, scheduled posts seven days after their publishing time, and archived items after seven days. It also removes their managed `media/<job-id>/` Blob files, orphaned weekly media pools, expired research caches, old AI usage rows, and empty old week records. Drafts (including Publer drafts), review items, failed/ambiguous jobs, running work, and future scheduled posts are never selected. `RETENTION_DAYS=7` is the minimum and recommended setting; it can be increased up to 3650 days. This cleanup removes RX Studio records and managed Blob objects only; it does not delete posts from social platforms or Publer.
 
 ### 4. Redeploy and verify
 

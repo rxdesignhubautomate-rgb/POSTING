@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { head } from '@vercel/blob';
+import { head,del } from '@vercel/blob';
 import { authorize,errorResponse,redact } from '../../../../lib/auth';
 import { getJob,withJob,settings } from '../../../../lib/db';
 import { briefSchema,mediaSchema,assertEditable } from '../../../../lib/model';
@@ -33,7 +33,7 @@ export async function POST(req,{params}){try{
       if(media.type==='image'&&job.media.filter(m=>m.type==='image').length>=10)throw new Error('Use up to ten images per daily post.');
       job.media.push(media);job.content={};job.research=null;job.research_history=[];job.research_evidence=[];job.audit=null;job.audit_digest=null;job.status='draft';
     }else if(action==='remove_media'){
-      assertEditable(job);job.media=job.media.filter(m=>m.url!==body.url);job.content={};job.audit=null;job.audit_digest=null;job.status='draft';
+      assertEditable(job);const media=job.media.find(m=>m.url===body.url);if(media){const origin=process.env.BLOB_PUBLIC_ORIGIN?.replace(/\/$/,'');const url=new URL(media.url);if(origin&&url.origin===origin&&media.pathname?.startsWith(`media/${id}/`))await del(media.url);}job.media=job.media.filter(m=>m.url!==body.url);job.content={};job.audit=null;job.audit_digest=null;job.status='draft';
     }else if(action==='generate'){
       assertEditable(job);try{await step(job,save);}catch(e){job.error=redact(e.message);await save();throw e;}
     }else if(action==='review_platform'){
