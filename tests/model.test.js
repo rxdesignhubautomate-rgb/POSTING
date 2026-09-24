@@ -1,0 +1,35 @@
+import { it,expect } from 'vitest';
+import { briefSchema,selectType,validFor,validateMediaSet,buildPayload,assertEditable } from '../lib/model';
+const brief={topic:'Visual aid printing',primary_keyword:'visual aid printing',language:'english',platforms:['facebook'],cta_url:'https://rxdesignhub.com',notes:'',targets:{facebook:['fb']},boards:{}};
+const m={type:'image',width:1080,height:1080,publer:{id:'m1',validity:{facebook:{photo:true},instagram:{photo:true},google:{photo:true},pinterest:{photo:true}}}};
+const job={brief,media:[m],content:{facebook:{text:'Caption',alt_texts:['Image one']}}};
+const accounts=[{id:'fb',provider:'facebook',status:'active'},{id:'fb2',provider:'facebook',status:'active'},{id:'ig',provider:'instagram',status:'active'},{id:'g',provider:'google',status:'active'},{id:'pin',provider:'pinterest',status:'active'}];
+it('rejects empty briefs, insecure CTA URL and unknown platforms',()=>{expect(()=>briefSchema.parse({...brief,topic:''})).toThrow();expect(()=>briefSchema.parse({...brief,cta_url:'javascript:alert(1)'})).toThrow();expect(()=>briefSchema.parse({...brief,platforms:['unknown']})).toThrow();});
+it('selects compatible formats and caps image counts',()=>{expect(selectType('youtube',[m])).toBeNull();expect(selectType('linkedin',Array(10).fill(m)).count).toBe(9);expect(selectType('twitter',Array(10).fill(m)).count).toBe(4);expect(selectType('google',Array(3).fill(m)).count).toBe(1);});
+it('uses video+format for reels/shorts, skips Google video',()=>{const v={type:'video',width:1080,height:1920,duration:60};expect(selectType('instagram',[v])).toMatchObject({type:'video',format:'reel'});expect(selectType('youtube',[v]).format).toBe('short');expect(selectType('youtube',[{...v,duration:180}]).format).toBe('short');expect(selectType('youtube',[{...v,duration:181}]).format).toBeUndefined();expect(selectType('google',[v])).toBeNull();});
+it('rejects unsupported video duration or aspect',()=>{const v={type:'video',width:1920,height:1080,duration:150};expect(selectType('instagram',[v])).toBeNull();expect(selectType('twitter',[v])).toBeNull();expect(selectType('tiktok',[v])).toBeNull();});
+it('allows one video plus images but rejects too many assets',()=>{expect(()=>validateMediaSet([])).toThrow();expect(()=>validateMediaSet(Array(11).fill(m))).toThrow();expect(()=>validateMediaSet([m,{type:'video'},{type:'video'}])).toThrow();expect(()=>validateMediaSet([m,{type:'video'}])).not.toThrow();});
+it('fails closed on unknown/false validity',()=>{expect(validFor({},'instagram','reel')).toBe(false);expect(validFor({validity:{instagram:{video:true,reel:false}}},'instagram','reel')).toBe(false);});
+it('creates draft without a schedule and immediate with correct endpoint',()=>{expect(buildPayload(job,'draft',null,accounts).payload.bulk.state).toBe('draft');const now=buildPayload(job,'now',null,accounts);expect(now.endpoint).toBe('/posts/schedule/publish');expect(now.payload.bulk.posts[0].accounts).toEqual([{id:'fb'}]);});
+it('places schedule on accounts and rejects mismatched account providers',()=>{expect(buildPayload(job,'schedule','2027-01-01T10:00:00+05:30',accounts).payload.bulk.posts[0].accounts[0].scheduled_at).toContain('+05:30');expect(()=>buildPayload({...job,brief:{...brief,targets:{facebook:['ig']}}},'draft',null,accounts)).toThrow(/Invalid/);});
+it('places Instagram comment and Pinterest board on accounts',()=>{const j={...job,brief:{...brief,platforms:['instagram','pinterest','google'],targets:{instagram:['ig'],pinterest:['pin'],google:['g']},boards:{pin:'board1'}},content:{instagram:{caption:'hello',first_comment_hashtags:'#Print'},pinterest:{description:'desc',title:'Title'},google:{text:'hello'}}};const posts=buildPayload(j,'draft',null,accounts).payload.bulk.posts;expect(posts.find(p=>p.accounts[0].id==='pin').accounts[0].album_id).toBe('board1');expect(posts.find(p=>p.accounts[0].id==='ig').accounts[0].comments[0].text).toBe('#Print');expect(posts.find(p=>p.accounts[0].id==='g').networks.google.title).toBe('LEARN_MORE');});
+it('uses video for video platforms and image for Pinterest/Google in one daily post',()=>{
+  const video={type:'video',width:1080,height:1920,duration:60,publer:{id:'v1',validity:{instagram:{reel:true},facebook:{video:true},youtube:{short:true}}}};
+  const image={...m,publer:{id:'i1',validity:{google:{photo:true},pinterest:{photo:true}}}};
+  const j={brief:{...brief,platforms:['instagram','google','pinterest'],targets:{instagram:['ig'],google:['g'],pinterest:['pin']},boards:{pin:'board1'}},media:[video,image],content:{instagram:{caption:'reel'},google:{text:'gbp'},pinterest:{description:'pin',title:'Pin'}}};
+  const posts=buildPayload(j,'draft',null,accounts).payload.bulk.posts;
+  expect(posts.find(p=>p.accounts[0].id==='ig').networks.instagram.media[0]).toMatchObject({id:'v1',type:'video'});
+  expect(posts.find(p=>p.accounts[0].id==='g').networks.google.media[0]).toMatchObject({id:'i1',type:'image'});
+  expect(posts.find(p=>p.accounts[0].id==='pin').networks.pinterest.media[0]).toMatchObject({id:'i1',type:'image'});
+});
+it('splits same-platform profiles into separate posts with profile-specific copy',()=>{
+  const j={...job,brief:{...brief,targets:{facebook:['fb','fb2']}},content:{facebook:{text:'fallback'},'facebook:fb':{text:'RX page copy'},'facebook:fb2':{text:'personal copy'}}};
+  const posts=buildPayload(j,'draft',null,accounts).payload.bulk.posts;
+  expect(posts).toHaveLength(2);
+  expect(posts.every(p=>p.accounts)).toBe(true);
+  expect(posts.every(p=>p.accounts.length===1)).toBe(true);
+  expect(posts.every(p=>!p.networks.default)).toBe(true);
+  expect(posts.find(p=>p.accounts[0].id==='fb').networks.facebook.text).toBe('RX page copy');
+  expect(posts.find(p=>p.accounts[0].id==='fb2').networks.facebook.text).toBe('personal copy');
+});
+it('prevents edits once delivery begins',()=>expect(()=>assertEditable({delivery:{status:'working'}})).toThrow(/delivery/));
