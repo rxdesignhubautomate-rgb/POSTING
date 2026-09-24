@@ -9,9 +9,10 @@ export const maxDuration=120;
 export async function GET(req){
   try{
     authorize(req);
+    const channelSettings=normalizeChannels(await getSetting('channels',defaultChannels()));
     return Response.json({
       ...await settings(),
-      channels:normalizeChannels(await getSetting('channels',defaultChannels())),
+      ...channelSettings,
       configured:{
         database:Boolean(databaseUrl()),
         blob:Boolean(process.env.BLOB_READ_WRITE_TOKEN&&process.env.BLOB_PUBLIC_ORIGIN),
