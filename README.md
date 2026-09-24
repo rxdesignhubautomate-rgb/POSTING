@@ -2,6 +2,8 @@
 
 A complete Next.js web dashboard for RX Design Hub. Upload media, research a topic, write platform-specific copy, edit and preview each version, create Publer drafts, schedule posts, and export an Excel tracker.
 
+The **Future Press** interface uses a brand-aware command workflow, dedicated loading and recovery screens, explicit request timeout messages, responsive navigation, and `/api/health` for a fast deployment availability check. A browser-level DNS/TLS failure happens before application code can load; use the health route or another network/browser to distinguish that condition from an RX Studio runtime error.
+
 This is the web application. Deploy **this folder** (`rx-publer-web`), not the separate Windows CLI project.
 
 ## Try it immediately
