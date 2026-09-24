@@ -6,6 +6,11 @@
     "reach": "4,200+ pharma companies pan-India",
     "services": ["Visual Aids", "Diaries", "Chit Pads", "Prescription Pads", "Bill Books", "Customized Pens", "Paper Weights", "Reminder Cards", "Chemist Books"]
   },
+  "brands": {
+    "rx_global": {"label":"RX Design Hub Global","short":"RX","tagline":"Pan-India pharma branding","cta_url":"https://rxdesignhub.com","default_persona":"rx_national","color":"#0F6B5C","color_dark":"#08483E","tint":"#DCEFEA"},
+    "visualaid_lucknow": {"label":"Visual Aid Manufacturer Lucknow","short":"VA","tagline":"Local SEO · Lucknow & UP","cta_url":"https://rxdesignhub.com","default_persona":"lucknow_local","color":"#D2541B","color_dark":"#96370D","tint":"#F9E5D9"},
+    "shubham": {"label":"Shubham Personal Branding","short":"SK","tagline":"Founder voice · automation & bootstrapping","cta_url":"https://shubhamkumar.co.in","default_persona":"personal","color":"#3B3FB6","color_dark":"#272A82","tint":"#E5E5FA"}
+  },
   "personas": {
     "rx_national": {
       "label": "RX Design Hub",
@@ -46,19 +51,19 @@
     }
   },
   "channels": [
-    {"id": "facebook_rx", "platform": "facebook", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["10:15", "16:15"]},
-    {"id": "facebook_shubham", "platform": "facebook", "label": "Shubham Kumar", "persona": "personal", "enabled": true, "posts_per_week": 8, "time_slots": ["11:15", "18:15"]},
-    {"id": "facebook_lucknow", "platform": "facebook", "label": "Visual Aid Pharma Lucknow", "persona": "lucknow_local", "enabled": true, "posts_per_week": 8, "time_slots": ["09:45", "17:45"]},
-    {"id": "instagram_rx", "platform": "instagram", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["10:45", "19:15"]},
-    {"id": "instagram_lucknow", "platform": "instagram", "label": "Pharma Visual Aid in Lucknow", "persona": "lucknow_local", "enabled": true, "posts_per_week": 8, "time_slots": ["12:15", "20:15"]},
-    {"id": "instagram_personal", "platform": "instagram", "label": "Shubham Kumar", "persona": "personal", "enabled": false, "posts_per_week": 8, "time_slots": ["18:45"]},
-    {"id": "youtube_rx", "platform": "youtube", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["13:15", "20:45"], "angle_mix": {"lucknow_local": 0.3}},
-    {"id": "youtube_shubham", "platform": "youtube", "label": "Shubham Kumar", "persona": "personal", "enabled": true, "posts_per_week": 8, "time_slots": ["14:45", "21:15"]},
-    {"id": "linkedin_shubham", "platform": "linkedin", "label": "Shubham Kumar", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["09:30", "17:15"]},
-    {"id": "pinterest_visualaid", "platform": "pinterest", "label": "Shubham Kumar / Visual Aid", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["08:45", "19:45"], "default_board": ""},
-    {"id": "google_visualaid", "platform": "google", "label": "Visual Aid + personal", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["11:45", "16:45"]},
-    {"id": "twitter_future", "platform": "twitter", "label": "X / Twitter", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]},
-    {"id": "threads_future", "platform": "threads", "label": "Threads", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]},
-    {"id": "tiktok_future", "platform": "tiktok", "label": "TikTok", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]}
+    {"id": "facebook_rx", "brand":"rx_global", "platform": "facebook", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["10:15", "16:15"]},
+    {"id": "facebook_shubham", "brand":"shubham", "platform": "facebook", "label": "Shubham Kumar", "persona": "personal", "enabled": true, "posts_per_week": 8, "time_slots": ["11:15", "18:15"]},
+    {"id": "facebook_lucknow", "brand":"visualaid_lucknow", "platform": "facebook", "label": "Visual Aid Pharma Lucknow", "persona": "lucknow_local", "enabled": true, "posts_per_week": 8, "time_slots": ["09:45", "17:45"]},
+    {"id": "instagram_rx", "brand":"rx_global", "platform": "instagram", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["10:45", "19:15"]},
+    {"id": "instagram_lucknow", "brand":"visualaid_lucknow", "platform": "instagram", "label": "Pharma Visual Aid in Lucknow", "persona": "lucknow_local", "enabled": true, "posts_per_week": 8, "time_slots": ["12:15", "20:15"]},
+    {"id": "instagram_personal", "brand":"shubham", "platform": "instagram", "label": "Shubham Kumar", "persona": "personal", "enabled": false, "posts_per_week": 8, "time_slots": ["18:45"]},
+    {"id": "youtube_rx", "brand":"rx_global", "platform": "youtube", "label": "RX Design Hub", "persona": "rx_national", "enabled": true, "posts_per_week": 8, "time_slots": ["13:15", "20:45"], "angle_mix": {"lucknow_local": 0.3}},
+    {"id": "youtube_shubham", "brand":"shubham", "platform": "youtube", "label": "Shubham Kumar", "persona": "personal", "enabled": true, "posts_per_week": 8, "time_slots": ["14:45", "21:15"]},
+    {"id": "linkedin_shubham", "brand":"shubham", "platform": "linkedin", "label": "Shubham Kumar", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["09:30", "17:15"]},
+    {"id": "pinterest_visualaid", "brand":"visualaid_lucknow", "platform": "pinterest", "label": "Shubham Kumar / Visual Aid", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["08:45", "19:45"], "default_board": ""},
+    {"id": "google_visualaid", "brand":"visualaid_lucknow", "platform": "google", "label": "Visual Aid + personal", "persona": "blend_personal_visualaid", "enabled": true, "posts_per_week": 8, "time_slots": ["11:45", "16:45"]},
+    {"id": "twitter_future", "brand":"rx_global", "platform": "twitter", "label": "X / Twitter", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]},
+    {"id": "threads_future", "brand":"rx_global", "platform": "threads", "label": "Threads", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]},
+    {"id": "tiktok_future", "brand":"rx_global", "platform": "tiktok", "label": "TikTok", "persona": "rx_national", "enabled": false, "posts_per_week": 8, "time_slots": ["12:00"]}
   ]
 }

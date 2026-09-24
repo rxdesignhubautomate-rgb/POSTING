@@ -10,7 +10,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "vitest run"
+    "test": "vitest run",
+    "reset": "node scripts/reset.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",

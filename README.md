@@ -103,14 +103,47 @@ If Neon created variables with your database prefix instead of `DATABASE_URL`, t
 
 ## Weekly workflow
 
-Use **This Week** for the owner workflow: topics and media in, a week of approved scheduled posts out.
+Use **All Brands** for the combined overview, then open an RX Design Hub Global, Visual Aid Manufacturer Lucknow, or Shubham Personal Branding dashboard. Topics, media pools, channel selection, statistics, calendars and media libraries are scoped to the active brand.
 
-1. **Connections → Sync Publer accounts.** Map each account/channel to a persona: RX national, Lucknow local, Shubham personal, or blended personal visual-aid.
+1. **Connections → Sync Publer accounts.** In **Brand & channel mapping**, map each channel to its brand, persona, Publer account and (for Pinterest) board. Set the production cadence from 1–10 posts per week and save it.
 2. **This Week → add topics.** Ek line me topic likho: `topic | keyword | notes`. Add 3-15 topics.
 3. **Upload videos/images.** Video ke liye notes zaroor do, because the AI cannot watch video files. Notes explain what the video shows.
-4. **Build week.** The planner creates channel slots across Monday-Sunday, rotates topics, avoids duplicate YouTube video use, and reports shortfalls when more videos are needed.
+4. **Build week.** The planner creates slots only for the active brand (or all enabled channels from All Brands), rotates topics, avoids duplicate YouTube video use, and reports shortfalls when more videos are needed.
 5. **Wait for drafts.** Cron/background tick researches, writes and reviews drafts. Browser band karne ke baad bhi cron drafts banata rahega when configured.
-6. **Approve all valid.** Approval schedules valid posts in Publer at the planned IST slots. `needs_fix` drafts stay isolated and do not block the rest of the week.
+6. **Approve all valid.** Approval sends only the active brand's valid drafts to Publer at the planned IST slots. `needs_fix` drafts stay isolated and do not block the rest of the week.
+
+## Brand dashboards
+
+The sidebar contains four dashboard choices:
+
+- **All Brands** — a combined overview with an ink-plate summary for each brand.
+- **RX Design Hub Global** — pan-India pharma branding using the RX national persona.
+- **Visual Aid Manufacturer Lucknow** — local Lucknow/UP search and service content.
+- **Shubham Personal Branding** — first-person founder, automation and bootstrapping content.
+
+The selected dashboard is remembered in browser storage. Creating a post from a brand dashboard pre-fills its CTA, persona, enabled platforms, mapped accounts and Pinterest board. Brand ownership is stored in existing JSONB records, so no database migration is required.
+
+## Fresh start / reset
+
+The reset tool is destructive, so its default mode is a read-only preview:
+
+```powershell
+npm run reset
+```
+
+It prints row counts plus scheduled/draft Publer posts that would be removed. To proceed, use:
+
+```powershell
+npm run reset -- --confirm
+```
+
+Before any deletion, this writes `backups/rx-backup-<timestamp>.json` with every reset table and settings row. The reset truncates `rx_jobs`, `rx_weeks`, `rx_media`, `rx_research`, `topic_research`, `ai_usage`, and `rx_limits`; it deletes the `channels` setting so shipped brand defaults reload, while keeping the `connections` setting.
+
+- Add `--all` to delete every settings row, including the saved Publer connection sync.
+- Add `--blob` to delete managed `media/` and `pool/` objects from Vercel Blob.
+- Publer scheduled/draft deletion is attempted when credentials exist. API/plan failures do not stop the database reset; the command prints IDs that must be removed manually in **Publer → Calendar**.
+
+The same guarded workflow is available in **Connections → Danger zone · Fresh start**. It previews counts, requires typing `RESET` exactly, downloads the JSON backup, and then refreshes the empty workspace. It is disabled in demo mode.
 
 ### Background cron
 

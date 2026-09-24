@@ -18,7 +18,7 @@ export async function POST(req,{params}){try{
     return Response.json({week_id:id,pool});
   }
   if(body.action==='fill_gaps'){
-    const jobs=await listWeekJobs(id),pool=Array.isArray(body.media)?body.media:await getMediaPool(id),matched=body.mode==='date'?autoMatchMediaByDate(jobs,pool):autoMatchMedia(jobs,pool),changed=[];
+    const allJobs=await listWeekJobs(id),scope=new Set(body.job_ids??[]),jobs=scope.size?allJobs.filter(j=>scope.has(j.id)):allJobs,pool=Array.isArray(body.media)?body.media:await getMediaPool(id),matched=body.mode==='date'?autoMatchMediaByDate(jobs,pool):autoMatchMedia(jobs,pool),changed=[];
     for(const next of matched.jobs.filter(j=>j.media?.length&&jobs.find(old=>old.id===j.id&&!old.media?.length))){
       changed.push(await withJob(next.id,async(job)=>{if(job.delivery)return;job.media=next.media;job.media_ids=next.media_ids;job.updated_at=new Date().toISOString();}));
     }

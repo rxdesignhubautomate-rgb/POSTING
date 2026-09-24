@@ -1,6 +1,6 @@
 # RX Publer Web Validation
 
-Validation updated on 2026-09-17.
+Validation updated on 2026-09-24.
 
 ## Checks
 
@@ -10,7 +10,7 @@ Validation updated on 2026-09-17.
 
 ## Result
 
-The clean install completed, the Node test suite passed, and the Next.js production build completed successfully.
+The Node test suite passed (11 files, 85 tests), and the Next.js 16 production build completed successfully with all 12 pages/routes generated.
 
 The dashboard was opened locally in demo mode and the main workflow was checked:
 
@@ -22,7 +22,7 @@ The dashboard was opened locally in demo mode and the main workflow was checked:
 
 ## Notes
 
-Weekly autopilot coverage now includes planner slot generation, deterministic planning, YouTube video reuse limits, shortfall reporting, persona validation, cron authorization, existing route safety, model payloads, engine safety and auth.
+Weekly autopilot coverage now includes brand-scoped planning, deterministic seeds, YouTube video reuse limits, shortfall reporting, persona validation, cron authorization, existing route safety, model payloads, engine safety and auth. Reset coverage verifies dry runs, exact confirmation, backup-before-delete ordering, settings preservation and non-fatal Publer failures.
 
 Demo mode is intentional when `ADMIN_PASSWORD` is missing or `DEMO_MODE=true`. Production mode requires the environment variables listed in `.env.example`, the Neon SQL schema in `schema.sql`, Vercel Blob storage, OpenAI API access, Publer API access, and a configured cron trigger. Database URL fallbacks include `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `POSTGRES_URL`, `DATABSE_...`, and `DATABSEE_...`.
 
