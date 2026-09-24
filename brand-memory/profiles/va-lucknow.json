@@ -1,0 +1,13 @@
+{
+  "id":"va-lucknow","displayName":"Visual Aid Manufacturer Lucknow","scope":"local-up",
+  "positioning":"Lucknow-based visual aid and pharma printing studio in Vikas Nagar serving pharma companies, distributors and MRs across Lucknow and Uttar Pradesh — fast proofs, local coordination, doorstep delivery.",
+  "audience":["Lucknow & UP pharma companies","PCD franchise holders in UP","distributors / stockists","MRs and ASMs based in UP","clinics and chemists needing pads & bill books"],
+  "geo":{"base":"Vikas Nagar, Lucknow, Uttar Pradesh","lucknowAreas":["Vikas Nagar","Kapoorthala","Aliganj","Gomti Nagar","Hazratganj","Aminabad","Indira Nagar","Chinhat","Alambagh","Charbagh"],"upCities":["Kanpur","Varanasi","Prayagraj","Agra","Gorakhpur","Bareilly","Meerut","Noida","Ghaziabad","Ayodhya","Jhansi","Aligarh","Moradabad","Barabanki","Sitapur","Rae Bareli","Unnao","Sultanpur"]},
+  "primaryKeywords":["visual aid manufacturer Lucknow","visual aid printing Lucknow","pharma printing Lucknow","pharma branding Lucknow","visual aid printing Uttar Pradesh"],
+  "secondaryKeywords":["prescription pad printing Lucknow","doctor diary printing Lucknow","bill book printing Lucknow","chit pad printing Lucknow","visual aid printing {city}","pharma printing near me"],
+  "hindiKeywords":["लखनऊ में विज़ुअल एड प्रिंटिंग","फार्मा प्रिंटिंग लखनऊ","visual aid Lucknow mein","MR visual aid Lucknow"],
+  "topicPillars":["Local job showcase: '{product} for a {division} company in {UP city}'","Same-city speed: proof on WhatsApp, delivery inside Lucknow","Visit/meeting at Vikas Nagar office","UP city spotlight series (one city per week, rotate upCities)","Festival & season timing for UP (launch before conference season, year-end diaries)","Printed visual aid FAQs in Hindi/Hinglish"],
+  "cityRotationRule":"Every local post names exactly 1 Lucknow area OR 1 UP city in the first line/title. Rotate so no city repeats within 14 days.",
+  "hashtagBank":{"core":["#VisualAidLucknow","#LucknowPharma","#RXDesignHub"],"rotate":["#Lucknow","#UttarPradesh","#PharmaPrintingLucknow","#{City}Pharma","#UPPharma","#LucknowBusiness","#MRLucknow"]},
+  "cta":["WhatsApp +91 92195 48031","Call +91 91291 72980","Office: Vikas Nagar, Lucknow"],"linkTarget":"https://rxdesignhub.com (use the matching Lucknow/UP city landing page URL if it exists in the site sitemap)","language":"Hinglish-first (Roman script); add one Devanagari keyword line on Facebook and YouTube descriptions"
+}

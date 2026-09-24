@@ -1,0 +1,35 @@
+{
+  "facebook": {
+    "captionLength": [300, 900], "hookChars": 125,
+    "hookZone": "first 125 characters decide 'See more' — keyword + hook go here",
+    "structure": ["hook line", "2–4 short paragraphs, 1–2 lines each", "specific detail or mini story", "CTA with WhatsApp number", "link"],
+    "hashtags": {"min": 2, "max": 4, "position": "end"}, "links": "allowed in post body",
+    "extras": "For va-lucknow add Location: Vikas Nagar, Lucknow. For video posts write a separate one-line video title."
+  },
+  "instagram": {
+    "captionLength": [250, 1200], "hookChars": 125, "hookZone": "first 125 characters shown before more",
+    "structure": ["hook with keyword", "value lines with line breaks", "soft CTA", "hashtags"],
+    "hashtags": {"min": 3, "max": 5, "position": "end", "rule": "Never exceed 5 hashtags."},
+    "altTextMax": 100, "altText": "Generate descriptive alt text containing the primary keyword naturally.",
+    "onScreenTextWords": 6, "onScreenText": "Suggest one short on-screen line for a Reels cover.",
+    "links": "Say link in bio or give the canonical WhatsApp number.", "locationTag": "For va-lucknow suggest Lucknow, Uttar Pradesh or the rotated city."
+  },
+  "youtube": {
+    "titleMax": 70, "titleKeywordChars": 40,
+    "title": {"maxChars": 70, "rule": "Primary keyword in first 40 chars. Put #Shorts in the description, not the title."},
+    "descriptionMinChars": 600, "descriptionMaxChars": 5000,
+    "description": {"minChars": 600, "structure": ["search-visible intent", "what the video shows", "timestamps for long-form over 2 minutes", "profile about block", "canonical contact block", "links", "up to 3 hashtags"]},
+    "hashtags": {"min": 0, "max": 3},
+    "tags": {"min": 8, "max": 15, "maxTotalChars": 400, "rule": "Mix primary, secondary, geo, Hinglish and brand variants."},
+    "chapters": "long-form only", "pinnedComment": "Question to viewers plus one WhatsApp CTA.",
+    "thumbnailText": "Two to four words, not a copy of the title.",
+    "category": "Education for RX/VA and mentor content; otherwise People & Blogs.",
+    "language": "Use Hindi metadata when the voiceover is Hinglish."
+  },
+  "x": {
+    "maxChars": 280, "profiles": ["rx-global"],
+    "structure": ["one sharp insight or result", "one supporting detail", "optional link"],
+    "hashtags": {"min": 0, "max": 2}, "threads": "For deeper topics generate 4–6 posts; post one must stand alone.",
+    "threadCount": [1, 6], "rule": "No hashtag stuffing or opening emoji. Use the keyword naturally once."
+  }
+}

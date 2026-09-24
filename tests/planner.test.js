@@ -35,3 +35,10 @@ it('reports a shortfall when YouTube needs more videos',()=>{
   expect(plan.slots).toHaveLength(1);
   expect(plan.shortfalls[0]).toMatchObject({channel_id:'yt',filled:1});
 });
+
+it('assigns at least four different UP cities to a local weekly channel',()=>{
+  const channels=[{id:'local-fb',brand:'visualaid_lucknow',platform:'facebook',label:'VA Lucknow',persona:'lucknow_local',enabled:true,posts_per_week:8,time_slots:['10:00']}];
+  const plan=planWeek({week_start:'2026-09-21',topics,media:[image],channels,seed:'local-cities'});
+  expect(new Set(plan.slots.map(slot=>slot.geo)).size).toBeGreaterThanOrEqual(4);
+  expect(plan.slots.every(slot=>slot.geo)).toBe(true);
+});

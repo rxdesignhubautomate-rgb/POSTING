@@ -1,5 +1,5 @@
 import { it,expect } from 'vitest';
-import { briefSchema,selectType,validFor,validateMediaSet,buildPayload,assertEditable } from '../lib/model';
+import { briefSchema,selectType,validFor,validateMediaSet,buildPayload,buildYouTubeSnippet,assertEditable } from '../lib/model';
 const brief={topic:'Visual aid printing',primary_keyword:'visual aid printing',language:'english',platforms:['facebook'],cta_url:'https://rxdesignhub.com',notes:'',targets:{facebook:['fb']},boards:{}};
 const m={type:'image',width:1080,height:1080,publer:{id:'m1',validity:{facebook:{photo:true},instagram:{photo:true},google:{photo:true},pinterest:{photo:true}}}};
 const job={brief,media:[m],content:{facebook:{text:'Caption',alt_texts:['Image one']}}};
@@ -33,3 +33,6 @@ it('splits same-platform profiles into separate posts with profile-specific copy
   expect(posts.find(p=>p.accounts[0].id==='fb2').networks.facebook.text).toBe('personal copy');
 });
 it('prevents edits once delivery begins',()=>expect(()=>assertEditable({delivery:{status:'working'}})).toThrow(/delivery/));
+it('maps generated YouTube SEO fields into Data API-compatible snippet metadata',()=>{
+  expect(buildYouTubeSnippet({title:'Guide',description:'Details',tags:['visual aid'],category:'Education'},{language:'hinglish'})).toEqual({title:'Guide',description:'Details',tags:['visual aid'],categoryId:'27',defaultLanguage:'hi',defaultAudioLanguage:'hi'});
+});
