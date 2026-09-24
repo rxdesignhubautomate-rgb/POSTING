@@ -7,6 +7,7 @@ import { contentSchema } from '../../../../lib/validate';
 import { step,importStep,deliver,checkDelivery,reopenFailedDelivery } from '../../../../lib/engine';
 import { auditPlatform,generatePlatform } from '../../../../lib/ai';
 import { publer } from '../../../../lib/publer';
+import { isBrand } from '../../../../lib/channels';
 export const runtime='nodejs';export const maxDuration=300;
 export async function GET(req,{params}){try{authorize(req);const {id}=await params;const {research_history,research_evidence,...job}=await getJob(id);return Response.json(job);}catch(e){return errorResponse(e);}}
 export async function POST(req,{params}){try{
@@ -15,7 +16,7 @@ export async function POST(req,{params}){try{
     const {action}=body;
     if(['import','deliver','check'].includes(action)&&job.workspace_id!==process.env.PUBLER_WORKSPACE_ID)throw new Error('Workspace changed. Create a new job for the current workspace.');
     if(action==='save'){
-      assertEditable(job);const next=briefSchema.parse(body.brief);
+      assertEditable(job);const next=briefSchema.parse(body.brief);if(isBrand(body.brand))job.brand=body.brand;
       const changed=['topic','primary_keyword','language','notes','cta_url'].some(k=>next[k]!==job.brief[k]);
       job.brief=next;job.content=changed?{}:z.record(z.string(),contentSchema).parse(body.content??job.content);
       if(changed){job.research=null;job.research_history=[];job.research_evidence=[];}

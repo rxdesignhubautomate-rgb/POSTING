@@ -2,6 +2,7 @@ import { authorize,errorResponse } from '../../../lib/auth';
 import { settings,saveSettings,getSetting,saveSetting,databaseUrl } from '../../../lib/db';
 import { publer } from '../../../lib/publer';
 import { defaultChannels,normalizeChannels,validateChannelMappings } from '../../../lib/channels';
+import { autoMapChannels } from '../../../lib/channelMapping';
 
 export const runtime='nodejs';
 export const maxDuration=120;
@@ -9,9 +10,10 @@ export const maxDuration=120;
 export async function GET(req){
   try{
     authorize(req);
-    const channelSettings=normalizeChannels(await getSetting('channels',defaultChannels()));
+    const connectionSettings=await settings(),storedChannels=normalizeChannels(await getSetting('channels',defaultChannels())),channelSettings=autoMapChannels(storedChannels,connectionSettings.accounts??[]);
+    if(JSON.stringify(channelSettings.channels)!==JSON.stringify(storedChannels.channels))await saveSetting('channels',channelSettings);
     return Response.json({
-      ...await settings(),
+      ...connectionSettings,
       ...channelSettings,
       configured:{
         database:Boolean(databaseUrl()),
@@ -97,9 +99,12 @@ export async function POST(req){
     };
 
     await saveSettings(value);
+    const currentChannels=normalizeChannels(await getSetting('channels',defaultChannels())),mappedChannels=autoMapChannels(currentChannels,accounts);
+    if(JSON.stringify(mappedChannels.channels)!==JSON.stringify(currentChannels.channels))await saveSetting('channels',mappedChannels);
 
     return Response.json({
       ...value,
+      ...mappedChannels,
       message:optionErrors.length
         ? `Accounts synced. Publer media options failed for ${optionErrors.length} account(s); Pinterest board dropdowns may need another sync later.`
         : 'Accounts and boards synced.'
