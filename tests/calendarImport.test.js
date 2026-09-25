@@ -80,6 +80,17 @@ describe('bulk media assignment and export',()=>{
     expect(matched.jobs.find(j=>j.id==='li').media_ids).toEqual(['day2']);
   });
 
+  it('prefers media tagged for the exact posting date',()=>{
+    const jobs=[
+      {id:'first',channel_id:'facebook_rx',format:'photo',slot_at:'2026-10-05T10:00:00+05:30',brief:{platforms:['facebook']}},
+      {id:'second',channel_id:'facebook_rx',format:'photo',slot_at:'2026-10-06T10:00:00+05:30',brief:{platforms:['facebook']}}
+    ];
+    const pool=[{id:'sixth',type:'image',posting_date:'2026-10-06'},{id:'fifth',type:'image',posting_date:'2026-10-05'}];
+    const matched=autoMatchMediaByDate(jobs,pool);
+    expect(matched.jobs.find(j=>j.id==='first').media_ids).toEqual(['fifth']);
+    expect(matched.jobs.find(j=>j.id==='second').media_ids).toEqual(['sixth']);
+  });
+
   it('exports the same calendar schema with current status',()=>{
     const rows=exportImportRows([{id:'j1',external_id:'rx-1',slot_at:'2026-10-05T09:30:00+05:30',import_channel_id:'li_shubham',persona:'blend_personal_visualaid',format_original:'Text post',media_hint:'image',date_locked:false,status:'queued',brief:{topic:'Topic',primary_keyword:'keyword',cta_url:'https://rxdesignhub.com',language:'english'}}]);
     const csv=toCsv(rows);
